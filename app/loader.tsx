@@ -6,7 +6,7 @@ import { getClientIPAddress } from 'remix-utils/get-client-ip-address';
 import { getClientLocales } from 'remix-utils/locales/server';
 import { getToastSession } from './utils/server/toast-session.server';
 import { getListGenre, getListLanguages } from './services/tmdb/tmdb.server';
-import { combineHeaders } from "./utils/combineHeaders";
+import { combineHeaders } from "./utils";
 
 export default async function loader({ request }: LoaderFunctionArgs) {
     const locale = await i18next.getLocale(request);
