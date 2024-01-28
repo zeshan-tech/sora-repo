@@ -1,5 +1,5 @@
-import type { Handle } from '~/types/handle';
-import { BreadcrumbItem } from '~/components/elements/Breadcrumb';
+import type { Handle } from "~/types/handle";
+import { BreadcrumbItem } from "~/components/elements/Breadcrumb";
 
 export const handle: Handle = {
   breadcrumb: () => (
@@ -8,7 +8,7 @@ export const handle: Handle = {
     </BreadcrumbItem>
   ),
   miniTitle: () => ({
-    title: 'Typography',
+    title: "Typography",
     showImage: false,
   }),
   getSitemapEntries: () => null,
@@ -21,13 +21,6 @@ const TypographyPage = () => {
       <br />
       <p className="text-base tracking-wide md:text-lg">Display</p>
       <span className="text-display">Almost before we knew it, we had left the ground.</span>
-      {/* <p className="text-base tracking-wide md:text-lg">Numeric</p>
-      <span>
-        1 AU = 1,495978707x10
-        <sup>11</sup> m
-      </span>
-      <p className="text-base tracking-wide md:text-lg">Mono</p>
-      <span>console.log(foobar)</span> */}
       <br />
       <p className="text-base tracking-wide md:text-lg">H1</p>
       <h1>Almost before we knew it, we had left the ground.</h1>

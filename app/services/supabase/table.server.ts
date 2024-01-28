@@ -63,7 +63,6 @@ export async function insertHistory(_history: IHistoryDTO) {
       const { data, error } = await supabase.from('histories').insert(_history).select();
 
       if (data) {
-        // console.log(data);
         return { data: data as IHistory[], error };
       }
 
@@ -106,7 +105,6 @@ export async function getHistory(
     const { data, error } = await query;
 
     if (data) {
-      // console.log(data);
       return data as IHistory[];
     }
 

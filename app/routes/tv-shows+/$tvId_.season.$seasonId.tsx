@@ -1,71 +1,58 @@
-import { useEffect, useRef } from 'react';
-import { Card, CardBody, CardHeader } from '@nextui-org/card';
-import { useIntersectionObserver, useMeasure, useMediaQuery } from '@react-hookz/web';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Outlet, useLoaderData, useParams } from '@remix-run/react';
-import { mergeMeta } from '~/utils';
-import { motion, useTransform } from 'framer-motion';
-import Vibrant from 'node-vibrant';
-import { useTranslation } from 'react-i18next';
-import { MimeType } from 'remix-image';
+import { useEffect, useRef } from "react";
+import { Card, CardBody, CardHeader } from "@nextui-org/card";
+import { useIntersectionObserver, useMeasure, useMediaQuery } from "@react-hookz/web";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { Outlet, useLoaderData, useParams } from "@remix-run/react";
+import { mergeMeta } from "~/utils";
+import { motion, useTransform } from "framer-motion";
+import Vibrant from "node-vibrant";
+import { useTranslation } from "react-i18next";
+import { MimeType } from "remix-image";
 
-import type { Handle } from '~/types/handle';
-import { i18next } from '~/services/i18n';
-import getProviderList from '~/services/provider.server';
-import { authenticate } from '~/services/supabase';
-import { getTvSeasonDetail, getTvShowDetail } from '~/services/tmdb/tmdb.server';
-import type { ISeasonDetail, ITvShowDetail } from '~/services/tmdb/tmdb.types';
-import TMDB from '~/utils/media';
-import useColorDarkenLighten from '~/utils/react/hooks/useColorDarkenLighten';
-import { useCustomHeaderChangePosition } from '~/utils/react/hooks/useHeader';
-import { useHydrated } from '~/utils/react/hooks/useHydrated';
-import { useSoraSettings } from '~/utils/react/hooks/useLocalStorage';
-import { CACHE_CONTROL } from '~/utils/server/http';
-import { useHeaderStyle } from '~/store/layout/useHeaderStyle';
-import { useLayout } from '~/store/layout/useLayout';
-import { tvSeasonDetailPages } from '~/constants/tabLinks';
-import { BreadcrumbItem } from '~/components/elements/Breadcrumb';
-import Image from '~/components/elements/Image';
-import ErrorBoundaryView from '~/components/elements/shared/ErrorBoundaryView';
-import TabLink from '~/components/elements/tab/TabLink';
-import { backgroundStyles } from '~/components/styles/primitives';
-import PhotoIcon from '~/assets/icons/PhotoIcon';
-import BackgroundDefault from '~/assets/images/background-default.jpg';
+import type { Handle } from "~/types/handle";
+import { i18next } from "~/services/i18n";
+import getProviderList from "~/services/provider.server";
+import { authenticate } from "~/services/supabase";
+import { getTvSeasonDetail, getTvShowDetail } from "~/services/tmdb/tmdb.server";
+import type { ISeasonDetail, ITvShowDetail } from "~/services/tmdb/tmdb.types";
+import TMDB from "~/utils/media";
+import useColorDarkenLighten from "~/utils/react/hooks/useColorDarkenLighten";
+import { useCustomHeaderChangePosition } from "~/utils/react/hooks/useHeader";
+import { useHydrated } from "~/utils/react/hooks/useHydrated";
+import { useSoraSettings } from "~/utils/react/hooks/useLocalStorage";
+import { CACHE_CONTROL } from "~/utils/server/http";
+import { useHeaderStyle } from "~/store/layout/useHeaderStyle";
+import { useLayout } from "~/store/layout/useLayout";
+import { tvSeasonDetailPages } from "~/constants/tabLinks";
+import { BreadcrumbItem } from "~/components/elements/Breadcrumb";
+import Image from "~/components/elements/Image";
+import TabLink from "~/components/elements/tab/TabLink";
+import { backgroundStyles } from "~/components/styles/primitives";
+import PhotoIcon from "~/assets/icons/PhotoIcon";
+import BackgroundDefault from "~/assets/images/background-default.jpg";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const [, locale] = await Promise.all([
-    authenticate(request, undefined, true),
-    i18next.getLocale(request),
-  ]);
+  const [, locale] = await Promise.all([authenticate(request, undefined, true), i18next.getLocale(request)]);
 
   const { tvId, seasonId } = params;
-  if (!tvId || !seasonId) throw new Error('Missing params');
+  if (!tvId || !seasonId) throw new Error("Missing params");
   const tid = Number(tvId);
   const sid = Number(seasonId);
 
   // get translators
 
-  const [seasonDetail, detail, detailEng] = await Promise.all([
-    getTvSeasonDetail(tid, sid, locale),
-    getTvShowDetail(tid, locale),
-    getTvShowDetail(tid, 'en-US'),
-  ]);
-  if (!seasonDetail) throw new Response('Not Found', { status: 404 });
-  const title = detailEng?.name || '';
-  const orgTitle = detail?.original_name || '';
-  const year = new Date(seasonDetail?.air_date || '').getFullYear();
+  const [seasonDetail, detail, detailEng] = await Promise.all([getTvSeasonDetail(tid, sid, locale), getTvShowDetail(tid, locale), getTvShowDetail(tid, "en-US")]);
+  if (!seasonDetail) throw new Response("Not Found", { status: 404 });
+  const title = detailEng?.name || "";
+  const orgTitle = detail?.original_name || "";
+  const year = new Date(seasonDetail?.air_date || "").getFullYear();
   const season = seasonDetail?.season_number;
-  const extractColorImageUrl =
-    process.env.NODE_ENV === 'development'
-      ? TMDB.backdropUrl(seasonDetail?.poster_path || '', 'w300')
-      : `https://corsproxy.io/?${encodeURIComponent(
-          TMDB.backdropUrl(seasonDetail?.poster_path || '', 'w300'),
-        )}`;
-  const isEnded = detail?.status === 'Ended' || detail?.status === 'Canceled';
+  const extractColorImageUrl = process.env.NODE_ENV === "development" ? TMDB.backdropUrl(seasonDetail?.poster_path || "", "w300") : `https://corsproxy.io/?${encodeURIComponent(TMDB.backdropUrl(seasonDetail?.poster_path || "", "w300"))}`;
+  const isEnded = detail?.status === "Ended" || detail?.status === "Canceled";
 
   const [providers, fimg] = await Promise.all([
     getProviderList({
-      type: 'tv',
+      type: "tv",
       title,
       orgTitle,
       year,
@@ -79,8 +66,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   ]);
 
   const fimgb = Buffer.from(await fimg.arrayBuffer());
-  const palette =
-    seasonDetail?.poster_path && fimgb ? await Vibrant.from(fimgb).getPalette() : undefined;
+  const palette = seasonDetail?.poster_path && fimgb ? await Vibrant.from(fimgb).getPalette() : undefined;
 
   if (providers && providers.length > 0)
     return json(
@@ -88,31 +74,19 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         detail,
         seasonDetail,
         providers,
-        color: palette
-          ? Object.values(palette).sort((a, b) =>
-              a?.population === undefined || b?.population === undefined
-                ? 0
-                : b.population - a.population,
-            )[0]?.hex
-          : undefined,
+        color: palette ? Object.values(palette).sort((a, b) => (a?.population === undefined || b?.population === undefined ? 0 : b.population - a.population))[0]?.hex : undefined,
       },
-      { headers: { 'Cache-Control': CACHE_CONTROL.season } },
+      { headers: { "Cache-Control": CACHE_CONTROL.season } }
     );
 
   return json(
     {
       detail,
       seasonDetail,
-      color: palette
-        ? Object.values(palette).sort((a, b) =>
-            a?.population === undefined || b?.population === undefined
-              ? 0
-              : b.population - a.population,
-          )[0]?.hex
-        : undefined,
+      color: palette ? Object.values(palette).sort((a, b) => (a?.population === undefined || b?.population === undefined ? 0 : b.population - a.population))[0]?.hex : undefined,
       providers: [],
     },
-    { headers: { 'Cache-Control': CACHE_CONTROL.season } },
+    { headers: { "Cache-Control": CACHE_CONTROL.season } }
   );
 };
 
@@ -122,51 +96,36 @@ export const meta = mergeMeta<typeof loader>(({ data, params }) => {
   }
   const { seasonDetail } = data;
   return [
-    { name: 'description', content: seasonDetail?.overview || '' },
+    { name: "description", content: seasonDetail?.overview || "" },
     {
-      property: 'og:url',
+      property: "og:url",
       content: `https://sorachill.vercel.app/tv-shows/${params.tvId}/season/${params.seasonId}`,
     },
-    { property: 'og:description', content: seasonDetail?.overview || '' },
+    { property: "og:description", content: seasonDetail?.overview || "" },
     {
-      property: 'og:image',
+      property: "og:image",
       content: `https://sorachill.vercel.app/api/ogimage?m=${params.tvId}&mt=tv`,
     },
-    { name: 'twitter:description', content: seasonDetail?.overview || '' },
+    { name: "twitter:description", content: seasonDetail?.overview || "" },
   ];
 });
 
 export const handle: Handle = {
   breadcrumb: ({ match, t }) => (
     <>
-      <BreadcrumbItem
-        to={`/tv-shows/${match.params.tvId}/`}
-        key={`tv-show-${match.params.tvId}-overview`}
-      >
-        {(match.data as { detail: ITvShowDetail })?.detail?.name ||
-          (match.data as { detail: ITvShowDetail })?.detail?.original_name ||
-          match.params.tvId}
+      <BreadcrumbItem to={`/tv-shows/${match.params.tvId}/`} key={`tv-show-${match.params.tvId}-overview`}>
+        {(match.data as { detail: ITvShowDetail })?.detail?.name || (match.data as { detail: ITvShowDetail })?.detail?.original_name || match.params.tvId}
       </BreadcrumbItem>
-      <BreadcrumbItem
-        to={`/tv-shows/${match.params.tvId}/season/${match.params.seasonId}`}
-        key={`tv-shows-${match.params.tvId}-season-${match.params.seasonId}`}
-      >
-        {t('season')} {match.params.seasonId}
+      <BreadcrumbItem to={`/tv-shows/${match.params.tvId}/season/${match.params.seasonId}`} key={`tv-shows-${match.params.tvId}-season-${match.params.seasonId}`}>
+        {t("season")} {match.params.seasonId}
       </BreadcrumbItem>
     </>
   ),
   miniTitle: ({ match, t }) => ({
-    title: `${
-      (match.data as { detail: ITvShowDetail })?.detail?.name ||
-      (match.data as { detail: ITvShowDetail })?.detail?.original_name
-    } - ${(match.data as { seasonDetail: ISeasonDetail })?.seasonDetail?.name}`,
-    subtitle: t('episodes'),
-    showImage:
-      (match.data as { seasonDetail: ISeasonDetail })?.seasonDetail?.poster_path !== undefined,
-    imageUrl: TMDB.posterUrl(
-      (match.data as { seasonDetail: ISeasonDetail })?.seasonDetail?.poster_path || '',
-      'w92',
-    ),
+    title: `${(match.data as { detail: ITvShowDetail })?.detail?.name || (match.data as { detail: ITvShowDetail })?.detail?.original_name} - ${(match.data as { seasonDetail: ISeasonDetail })?.seasonDetail?.name}`,
+    subtitle: t("episodes"),
+    showImage: (match.data as { seasonDetail: ISeasonDetail })?.seasonDetail?.poster_path !== undefined,
+    imageUrl: TMDB.posterUrl((match.data as { seasonDetail: ISeasonDetail })?.seasonDetail?.poster_path || "", "w92"),
   }),
   disableLayoutPadding: true,
   customHeaderBackgroundColor: true,
@@ -181,29 +140,19 @@ const TvSeasonDetail = () => {
   const [size, ref] = useMeasure<HTMLDivElement>();
   const [imageSize, imageRef] = useMeasure<HTMLDivElement>();
   const { backgroundColor } = useColorDarkenLighten(color);
-  const isSm = useMediaQuery('(max-width: 650px)', { initializeWithValue: false });
-  const isXl = useMediaQuery('(max-width: 1280px)', { initializeWithValue: false });
+  const isSm = useMediaQuery("(max-width: 650px)", { initializeWithValue: false });
+  const isXl = useMediaQuery("(max-width: 1280px)", { initializeWithValue: false });
   const { sidebarBoxedMode } = useSoraSettings();
   const { viewportRef, scrollY } = useLayout((scrollState) => scrollState);
-  const { setBackgroundColor, startChangeScrollPosition } = useHeaderStyle(
-    (headerState) => headerState,
-  );
+  const { setBackgroundColor, startChangeScrollPosition } = useHeaderStyle((headerState) => headerState);
   const tabLinkRef = useRef<HTMLDivElement>(null);
   const tablinkIntersection = useIntersectionObserver(tabLinkRef, {
     root: viewportRef,
-    rootMargin: sidebarBoxedMode ? '-180px 0px 0px 0px' : '-165px 0px 0px 0px',
+    rootMargin: sidebarBoxedMode ? "-180px 0px 0px 0px" : "-165px 0px 0px 0px",
     threshold: [0.5],
   });
-  const paddingTop = useTransform(
-    scrollY,
-    [0, startChangeScrollPosition, startChangeScrollPosition + 100],
-    [16, 16, startChangeScrollPosition ? 0 : 16],
-  );
-  const paddingBottom = useTransform(
-    scrollY,
-    [0, startChangeScrollPosition, startChangeScrollPosition + 100],
-    [32, 32, startChangeScrollPosition ? 0 : 32],
-  );
+  const paddingTop = useTransform(scrollY, [0, startChangeScrollPosition, startChangeScrollPosition + 100], [16, 16, startChangeScrollPosition ? 0 : 16]);
+  const paddingBottom = useTransform(scrollY, [0, startChangeScrollPosition, startChangeScrollPosition + 100], [32, 32, startChangeScrollPosition ? 0 : 32]);
   useCustomHeaderChangePosition(tablinkIntersection);
   useEffect(() => {
     if (startChangeScrollPosition) {
@@ -214,11 +163,7 @@ const TvSeasonDetail = () => {
 
   return (
     <>
-      <Card
-        radius="none"
-        className="flex w-full flex-col border-0"
-        style={{ height: `calc(${size?.height}px + 72px)` }}
-      >
+      <Card radius="none" className="flex w-full flex-col border-0" style={{ height: `calc(${size?.height}px + 72px)` }}>
         <CardHeader
           // @ts-ignore
           ref={ref}
@@ -233,23 +178,15 @@ const TvSeasonDetail = () => {
                   alt={seasonDetail?.name}
                   title={seasonDetail?.name}
                   classNames={{
-                    wrapper: 'w-full sm:w-3/4 xl:w-1/2',
-                    img: 'aspect-[2/3] !min-h-[auto] !min-w-[auto] shadow-xl shadow-default',
+                    wrapper: "w-full sm:w-3/4 xl:w-1/2",
+                    img: "aspect-[2/3] !min-h-[auto] !min-w-[auto] shadow-xl shadow-default",
                   }}
                   placeholder="empty"
                   responsive={[
                     {
                       size: {
-                        width: Math.round(
-                          (imageSize?.width || 0) *
-                            (!isXl && !isSm ? 0.5 : isXl && !isSm ? 0.75 : isXl && isSm ? 1 : 1),
-                        ),
-                        height: Math.round(
-                          ((imageSize?.width || 0) *
-                            3 *
-                            (!isXl && !isSm ? 0.5 : isXl && !isSm ? 0.75 : isXl && isSm ? 1 : 1)) /
-                            2,
-                        ),
+                        width: Math.round((imageSize?.width || 0) * (!isXl && !isSm ? 0.5 : isXl && !isSm ? 0.75 : isXl && isSm ? 1 : 1)),
+                        height: Math.round(((imageSize?.width || 0) * 3 * (!isXl && !isSm ? 0.5 : isXl && !isSm ? 0.75 : isXl && isSm ? 1 : 1)) / 2),
                       },
                     },
                   ]}
@@ -270,8 +207,7 @@ const TvSeasonDetail = () => {
                 {detail?.name} {seasonDetail?.name}
               </h2>
               <h5>
-                {seasonDetail?.episodes?.length || 0} {t('episodes')} &middot;{' '}
-                {seasonDetail?.air_date}{' '}
+                {seasonDetail?.episodes?.length || 0} {t("episodes")} &middot; {seasonDetail?.air_date}{" "}
               </h5>
             </div>
             {seasonDetail?.overview ? (
@@ -284,22 +220,16 @@ const TvSeasonDetail = () => {
         <CardBody
           style={{
             // @ts-ignore
-            '--theme-movie-brand': isHydrated ? backgroundColor : 'transparent',
+            "--theme-movie-brand": isHydrated ? backgroundColor : "transparent",
           }}
           className="absolute bottom-0 p-0 after:absolute after:bottom-0 after:h-full after:w-full after:bg-gradient-to-t after:from-movie-brand-color after:to-transparent after:content-['']"
         >
           <Image
-            src={
-              seasonDetail?.poster_path
-                ? TMDB.posterUrl(seasonDetail?.poster_path, 'w342')
-                : BackgroundDefault
-            }
+            src={seasonDetail?.poster_path ? TMDB.posterUrl(seasonDetail?.poster_path, "w342") : BackgroundDefault}
             radius="none"
             classNames={{
-              wrapper: 'w-full h-auto object-cover max-w-full',
-              img: `left-0 top-0 z-0 m-0 object-cover !opacity-30 blur-2xl ${
-                size ? 'visible' : 'invisible'
-              }'}`,
+              wrapper: "w-full h-auto object-cover max-w-full",
+              img: `left-0 top-0 z-0 m-0 object-cover !opacity-30 blur-2xl ${size ? "visible" : "invisible"}'}`,
             }}
             title={seasonDetail?.name}
             alt={seasonDetail?.name}
@@ -327,16 +257,13 @@ const TvSeasonDetail = () => {
         <motion.div
           className="sticky top-[61px] z-[1000] flex w-full justify-center transition-[padding] duration-100 ease-in-out"
           style={{
-            backgroundColor: isHydrated ? backgroundColor : 'transparent',
+            backgroundColor: isHydrated ? backgroundColor : "transparent",
             paddingTop,
             paddingBottom,
           }}
           ref={tabLinkRef}
         >
-          <div
-            className={backgroundStyles({ tablink: true })}
-            style={{ backgroundColor: isHydrated ? backgroundColor : 'transparent' }}
-          />
+          <div className={backgroundStyles({ tablink: true })} style={{ backgroundColor: isHydrated ? backgroundColor : "transparent" }} />
           <TabLink pages={tvSeasonDetailPages} linkTo={`/tv-shows/${tvId}/season/${seasonId}`} />
         </motion.div>
         <Outlet />
@@ -344,15 +271,5 @@ const TvSeasonDetail = () => {
     </>
   );
 };
-
-export function ErrorBoundary() {
-  return (
-    <ErrorBoundaryView
-      statusHandlers={{
-        404: ({ params }) => <p>There is no series with the ID: {params.tvId}</p>,
-      }}
-    />
-  );
-}
 
 export default TvSeasonDetail;

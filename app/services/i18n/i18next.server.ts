@@ -3,6 +3,7 @@ import { createCookie } from '@remix-run/node';
 import Backend from 'i18next-fs-backend';
 
 import { i18n } from './i18n.config';
+// import { RemixI18Next } from 'node_modules/remix-i18next/build/server';
 
 const TEN_YEARS_IN_SECONDS = 10 * 365 * 24 * 60 * 60;
 

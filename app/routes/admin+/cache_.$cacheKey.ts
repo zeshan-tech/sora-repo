@@ -1,4 +1,4 @@
-import { json, DataFunctionArgs } from '@remix-run/node';
+import { json, type DataFunctionArgs } from '@remix-run/node';
 import invariant from 'tiny-invariant';
 
 import { authenticate } from '~/services/supabase';

@@ -64,7 +64,7 @@ const BottomNav = (props: IBottomNavProps) => {
           {
             name: 'login',
             icon: LogIn,
-            path: `/sign-in?ref=${ref}`,
+            path: `auth/sign-in?ref=${ref}`,
           },
         ]),
     {

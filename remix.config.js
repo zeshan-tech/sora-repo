@@ -9,6 +9,6 @@ export default {
     /^swiper.*/,
     /@remix-pwa\/.*/,
     /^is-ip.*/,
-    /remix-i18next\/.*/,
+    'remix-i18next',
   ],
 };

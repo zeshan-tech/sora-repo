@@ -1,6 +1,6 @@
 import { redirect } from "@remix-run/node";
 import type { Session } from "@supabase/supabase-js";
-import { isbot } from "isbot";
+import isbot from "isbot";
 
 import sgConfigs from "../configs.server";
 import supabase from "./client.server";
@@ -46,7 +46,7 @@ export async function authenticate(request: Request, customAuthRequired?: boolea
   const [session, payload, botcheck] = await Promise.all([getSessionFromCookie(request.headers.get("Cookie")), process.env.NODE_ENV === "production" ? requestPayload(request) : undefined, isbotAuth(request.headers.get("User-Agent"))]);
 
   if (botcheck && botcheckRequired) {
-    console.log("bot detected", request.headers.get("User-Agent"));
+
     throw new Response(null, { status: 500 });
   } else if (!session.has("auth_token")) {
     // there is no token, no signed-in or expired cookie

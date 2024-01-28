@@ -1,8 +1,10 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 
+// import { i18next } from "~/services/i18n";
 import { authenticate } from "~/services/supabase";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const [, locale] = await Promise.all([authenticate(request, undefined, true), undefined]);
   return json(
     {
       short_name: "Sora",
@@ -15,6 +17,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       start_url: "/",
       dir: "ltr",
       scope: "/",
+      lang: locale,
       orientation: "natural",
       categories: ["books", "entertainment", "music", "news", "personalization", "photo"],
       shortcuts: [

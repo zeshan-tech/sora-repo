@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import type { Handle } from "~/types/handle";
 import type { IMedia } from "~/types/media";
 import { getAnimePopular } from "~/services/consumet/anilist/anilist.server";
+// import { i18next } from "~/services/i18n";
 import { authenticate } from "~/services/supabase";
 import { getListDiscover, getListMovies, getListPeople, getTrending } from "~/services/tmdb/tmdb.server";
 import { useTypedRouteLoaderData } from "~/utils/react/hooks/useTypedRouteLoaderData";

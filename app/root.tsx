@@ -14,7 +14,7 @@ import { NextUIProvider as NextUIv2Provider } from "@nextui-org/system";
 import { LiveReload, logger, useSWEffect } from "@remix-pwa/sw";
 import { cssBundleHref } from "@remix-run/css-bundle";
 import { json, type LinkDescriptor, type LinksFunction, type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
-import { isRouteErrorResponse, Links, Meta, Scripts, useBeforeUnload, useFetchers, useLoaderData, useLocation, useNavigation, useRouteError } from "@remix-run/react";
+import { isRouteErrorResponse, Links, Meta, Scripts, useBeforeUnload, useFetchers, useLoaderData, useLocation, useNavigation, useRouteError, useAsyncError } from "@remix-run/react";
 import type { User } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
 import { ThemeProvider as RemixThemesProvider } from "next-themes";
@@ -24,6 +24,7 @@ import { getSelectorsByUserAgent } from "react-device-detect";
 import { useTranslation } from "react-i18next";
 import { Provider as WrapBalancerProvider } from "react-wrap-balancer";
 import rdtStylesheet from "remix-development-tools/index.css";
+import { useChangeLanguage } from "remix-i18next";
 import Image, { MimeType } from "remix-image";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import { getClientLocales } from "remix-utils/locales/server";
@@ -160,6 +161,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json(
     {
       user: user || undefined,
+      undefined,
+      genresMovie: await getListGenre("movie", undefined),
+      genresTv: await getListGenre("tv", undefined),
       languages: await getListLanguages(),
       gaTrackingId,
       deviceDetect,
@@ -175,6 +179,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     },
     {
       headers: combineHeaders(
+        new Headers({
+          "Set-Cookie": await i18nCookie.serialize(undefined),
+        }),
         new Headers({
           "Set-Cookie": await toast.commit(),
         })
@@ -501,135 +508,13 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  const isProd = process.env.NODE_ENV === "production";
+  const asyncError = useAsyncError();
 
-  if (isRouteErrorResponse(error)) {
-    console.log(error instanceof Error);
-    let message;
-    switch (error.status) {
-      case 401:
-        message = isProd ? "Oops! Looks like you tried to visit a page that you do not have access to." : error.data;
-        break;
-      case 404:
-        message = isProd ? "Oops! Looks like you tried to visit a page that does not exist." : error.data;
-        break;
-      default:
-        throw new Error(error.data || error.statusText);
-    }
-    return (
-      <Document title={`${error.status} ${error.statusText}`}>
-        <RemixThemesProvider defaultTheme="system" attribute="class" enableColorScheme enableSystem themes={listThemes} value={themeValues}>
-          <div className="flex h-screen flex-col items-center justify-center gap-y-4">
-            <NextUIImage width={480} src={pageNotFound} alt="404" className="object-cover" />
-            <h1 className="text-center text-warning">
-              {error.status} {error.statusText}
-            </h1>
-            <p>{message}</p>
-            <div className="flex w-full flex-row items-center justify-center gap-x-4">
-              <Button
-                size="md"
-                variant="ghost"
-                color="success"
-                startContent={<Home />}
-                type="button"
-                onPress={() => {
-                  window.location.href = "/";
-                }}
-              >
-                Back to Home
-              </Button>
-              <Button
-                size="md"
-                variant="ghost"
-                color="warning"
-                startContent={<Refresh filled />}
-                type="button"
-                onPress={() => {
-                  window.location.reload();
-                }}
-              >
-                Reload Page
-              </Button>
-            </div>
-          </div>
-        </RemixThemesProvider>
-      </Document>
-    );
-  } else if (error instanceof Error) {
-    console.log(error);
-    return (
-      <Document title="Error!">
-        <RemixThemesProvider defaultTheme="system" attribute="class" enableColorScheme enableSystem themes={listThemes} value={themeValues}>
-          <div className="flex h-screen flex-col items-center justify-center gap-y-4">
-            <NextUIImage width={480} src={pageNotFound} alt="404" className="object-cover" />
-            <h1 className="text-center text-danger">There was an error</h1>
-            <p>{error.message}</p>
-            <div className="flex w-full flex-row items-center justify-center gap-x-4">
-              <Button
-                size="md"
-                variant="ghost"
-                color="success"
-                startContent={<Home />}
-                type="button"
-                onPress={() => {
-                  window.location.href = "/";
-                }}
-              >
-                Back to Home
-              </Button>
-              <Button
-                size="md"
-                variant="ghost"
-                color="warning"
-                startContent={<Refresh filled />}
-                type="button"
-                onPress={() => {
-                  window.location.reload();
-                }}
-              >
-                Reload Page
-              </Button>
-            </div>
-          </div>
-        </RemixThemesProvider>
-      </Document>
-    );
-  } else {
-    return (
-      <Document title="Error!">
-        <RemixThemesProvider defaultTheme="system" attribute="class" enableColorScheme enableSystem themes={listThemes} value={themeValues}>
-          <div className="flex h-screen flex-col items-center justify-center gap-y-4">
-            <NextUIImage width={480} src={pageNotFound} alt="404" className="object-cover" />
-            <h1 className="text-center text-danger">Unknown error</h1>
-            <div className="flex w-full flex-row items-center justify-center gap-x-4">
-              <Button
-                size="md"
-                variant="ghost"
-                color="success"
-                startContent={<Home />}
-                type="button"
-                onPress={() => {
-                  window.location.href = "/";
-                }}
-              >
-                Back to Home
-              </Button>
-              <Button
-                size="md"
-                variant="ghost"
-                color="warning"
-                startContent={<Refresh filled />}
-                type="button"
-                onPress={() => {
-                  window.location.reload();
-                }}
-              >
-                Reload Page
-              </Button>
-            </div>
-          </div>
-        </RemixThemesProvider>
-      </Document>
-    );
-  }
+  return (
+    <div>
+      <h1>There is an error to run app</h1>
+      <span>{JSON.stringify(error, null, 4)}</span>
+      <span>{JSON.stringify(asyncError, null, 4)}</span>
+    </div>
+  );
 }

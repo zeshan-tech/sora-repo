@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/indent */
-import { create } from 'zustand';
+import { create } from "zustand";
 
-import type { IMovieSource, IMovieSubtitle } from '~/services/tmdb/tmdb.types';
-import { ITrailer } from '~/types/media';
+import type { IMovieSource, IMovieSubtitle } from "~/services/tmdb/tmdb.types";
+import { ITrailer } from "~/services/consumet/anilist/anilist.types";
 
 export type PlayerData =
   | {
@@ -16,7 +16,7 @@ export type PlayerData =
       titlePlayer: string;
       id: number | string;
       posterPlayer: string;
-      typeVideo: 'movie' | 'tv' | 'anime';
+      typeVideo: "movie" | "tv" | "anime";
       trailerAnime?: ITrailer;
       currentEpisode?: number;
       userId?: string;
@@ -28,9 +28,9 @@ export type PlayerData =
         parent_tmdb_id?: number;
         episode_number?: number;
         season_number?: number;
-        type?: 'movie' | 'episode' | 'all';
+        type?: "movie" | "episode" | "all";
         title?: string;
-        sub_format: 'srt' | 'webvtt';
+        sub_format: "srt" | "webvtt";
       };
       overview: string;
       malId?: number;
@@ -80,8 +80,8 @@ interface PlayerState {
 const defaultState = {
   shouldShowPlayer: false,
   isMini: false,
-  routePlayer: '',
-  titlePlayer: '',
+  routePlayer: "",
+  titlePlayer: "",
   playerData: undefined,
   qualitySelector: [],
   subtitleSelector: [],

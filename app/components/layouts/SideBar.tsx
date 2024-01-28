@@ -1,52 +1,44 @@
-import { Button } from '@nextui-org/button';
-import { Card, CardBody, CardFooter } from '@nextui-org/card';
-import { Link } from '@nextui-org/link';
-import { Spinner } from '@nextui-org/spinner';
-import { Tooltip } from '@nextui-org/tooltip';
-import { useHover } from '@react-aria/interactions';
-import { NavLink, useNavigate } from '@remix-run/react';
-import { useTranslation } from 'react-i18next';
-import { MimeType } from 'remix-image';
-import { tv } from 'tailwind-variants';
+import { Button } from "@nextui-org/button";
+import { Card, CardBody, CardFooter } from "@nextui-org/card";
+import { Link } from "@nextui-org/link";
+import { Spinner } from "@nextui-org/spinner";
+import { Tooltip } from "@nextui-org/tooltip";
+import { useHover } from "@react-aria/interactions";
+import { NavLink, useNavigate } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
+import { MimeType } from "remix-image";
+import { tv } from "tailwind-variants";
 
-import { useSoraSettings } from '~/utils/react/hooks/useLocalStorage';
-import Image from '~/components/elements/Image';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from '~/components/elements/NavigationMenu';
-import Anime from '~/assets/icons/AnimeIcon';
-import CategoryIcon from '~/assets/icons/CategoryIcon';
-import Discover from '~/assets/icons/DiscoverIcon';
-import History from '~/assets/icons/HistoryIcon';
-import Home from '~/assets/icons/HomeIcon';
-import Menu from '~/assets/icons/MenuIcon';
-import Movie from '~/assets/icons/MovieIcon';
-import Search from '~/assets/icons/SearchIcon';
-import Settings from '~/assets/icons/SettingsIcon';
-import TrendingUp from '~/assets/icons/TrendingUpIcon';
-import Tv from '~/assets/icons/TvIcon';
-import TwoUsers from '~/assets/icons/TwoUsersIcon';
-import Logo from '~/assets/images/logo_loading.png';
+import { useSoraSettings } from "~/utils/react/hooks/useLocalStorage";
+import Image from "~/components/elements/Image";
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "~/components/elements/NavigationMenu";
+import Anime from "~/assets/icons/AnimeIcon";
+import CategoryIcon from "~/assets/icons/CategoryIcon";
+import Discover from "~/assets/icons/DiscoverIcon";
+import History from "~/assets/icons/HistoryIcon";
+import Home from "~/assets/icons/HomeIcon";
+import Menu from "~/assets/icons/MenuIcon";
+import Movie from "~/assets/icons/MovieIcon";
+import Search from "~/assets/icons/SearchIcon";
+import Settings from "~/assets/icons/SettingsIcon";
+import TrendingUp from "~/assets/icons/TrendingUpIcon";
+import Tv from "~/assets/icons/TvIcon";
+import TwoUsers from "~/assets/icons/TwoUsersIcon";
+import Logo from "~/assets/images/logo_loading.png";
 
 const sidebarStyles = tv({
-  base: 'fixed z-[1999] box-border hidden shrink-0 grow-0 transition-[max-width] duration-400 sm:block',
+  base: "fixed z-[1999] box-border hidden shrink-0 grow-0 transition-[max-width] duration-400 sm:block",
   variants: {
     sidebarMiniMode: {
-      true: 'w-full max-w-[80px] basis-[80px]',
-      false: 'w-full max-w-[250px] basis-[250px]',
+      true: "w-full max-w-[80px] basis-[80px]",
+      false: "w-full max-w-[250px] basis-[250px]",
     },
     sidebarBoxedMode: {
-      true: 'left-[15px] top-[15px] h-[calc(100vh_-_30px)] rounded-large border border-divider bg-background shadow-medium',
-      false: 'left-0 top-0 h-screen',
+      true: "left-[15px] top-[15px] h-[calc(100vh_-_30px)] rounded-large border border-divider bg-background shadow-medium",
+      false: "left-0 top-0 h-screen",
     },
     sidebarHoverMode: {
-      true: 'w-full max-w-[250px] basis-[250px] rounded-r-large border border-divider bg-background shadow-2xl',
+      true: "w-full max-w-[250px] basis-[250px] rounded-r-large border border-divider bg-background shadow-2xl",
     },
   },
   compoundVariants: [{}],
@@ -57,22 +49,22 @@ const sidebarStyles = tv({
 });
 
 const sidebarActiveStyles = tv({
-  base: 'h-[56px] justify-start transition-[width] duration-400',
+  base: "h-[56px] justify-start transition-[width] duration-400",
   variants: {
     sidebarMiniMode: {
-      true: 'w-[56px]',
-      false: 'w-[215px]',
+      true: "w-[56px]",
+      false: "w-[215px]",
     },
     sidebarHoverMode: {
-      true: 'w-[215px]',
+      true: "w-[215px]",
     },
     sidebarRoundedAll: {
-      true: 'rounded-small',
-      false: 'rounded-r-small',
+      true: "rounded-small",
+      false: "rounded-r-small",
     },
     sidebarPillAll: {
-      true: 'rounded-[56px]',
-      false: 'rounded-r-[56px]',
+      true: "rounded-[56px]",
+      false: "rounded-r-[56px]",
     },
   },
   defaultVariants: {
@@ -82,16 +74,16 @@ const sidebarActiveStyles = tv({
 });
 
 const viewportPositionStyles = tv({
-  base: '!fixed',
+  base: "!fixed",
   variants: {
     sidebarMiniMode: {
-      true: '!left-[85px]',
+      true: "!left-[85px]",
     },
     sidebarHoverMode: {
-      true: '!left-[250px]',
+      true: "!left-[250px]",
     },
     sidebarBoxedMode: {
-      true: '!left-[265px]',
+      true: "!left-[265px]",
     },
   },
   compoundVariants: [
@@ -99,19 +91,19 @@ const viewportPositionStyles = tv({
       sidebarMiniMode: true,
       sidebarHoverMode: true,
       sidebarBoxedMode: false,
-      class: '!left-[250px]',
+      class: "!left-[250px]",
     },
     {
       sidebarMiniMode: true,
       sidebarHoverMode: false,
       sidebarBoxedMode: true,
-      class: '!left-[100px]',
+      class: "!left-[100px]",
     },
     {
       sidebarMiniMode: false,
       sidebarHoverMode: false,
       sidebarBoxedMode: false,
-      class: '!left-[250px]',
+      class: "!left-[250px]",
     },
   ],
   defaultVariants: {
@@ -122,11 +114,11 @@ const viewportPositionStyles = tv({
 });
 
 const navigationPartStyles = tv({
-  base: 'w-full overflow-x-visible overflow-y-scroll scrollbar-hide',
+  base: "w-full overflow-x-visible overflow-y-scroll scrollbar-hide",
   variants: {
     sidebarBoxedMode: {
-      true: 'h-[calc(100%_-_100px)]',
-      false: 'h-[calc(100%_-_80px)]',
+      true: "h-[calc(100%_-_100px)]",
+      false: "h-[calc(100%_-_80px)]",
     },
   },
   defaultVariants: {
@@ -135,13 +127,13 @@ const navigationPartStyles = tv({
 });
 
 const SideBar = () => {
-  const { t } = useTranslation('sidebar');
+  const { t } = useTranslation("sidebar");
   const navigate = useNavigate();
   const { sidebarMiniMode, sidebarHoverMode, sidebarBoxedMode } = useSoraSettings();
   const { hoverProps: sidebarHoverProps, isHovered } = useHover({
     isDisabled: !sidebarHoverMode.value,
   });
-  const navigationItemWidthStyle = sidebarMiniMode.value && !isHovered ? 'w-[56px]' : 'w-[215px]';
+  const navigationItemWidthStyle = sidebarMiniMode.value && !isHovered ? "w-[56px]" : "w-[215px]";
 
   return (
     <aside
@@ -154,9 +146,7 @@ const SideBar = () => {
     >
       <div className="mb-3 ml-4 flex h-[65px] w-full flex-row items-center justify-start">
         <Button
-          className={`${
-            sidebarMiniMode.value && !isHovered ? 'basis-[50px]' : 'basis-[60px]'
-          } flex shrink-0 grow-0 justify-center`}
+          className={`${sidebarMiniMode.value && !isHovered ? "basis-[50px]" : "basis-[60px]"} flex shrink-0 grow-0 justify-center`}
           isIconOnly
           variant="light"
           onPress={() => {
@@ -188,11 +178,7 @@ const SideBar = () => {
                 contentType: MimeType.WEBP,
               }}
             />
-            <NavLink
-              to="/"
-              arial-label="home-page"
-              className="bg-gradient-to-tr from-secondary to-primary to-50% bg-clip-text text-3xl font-bold tracking-normal text-transparent focus:outline-none focus:ring-2 focus:ring-focus md:text-4xl"
-            >
+            <NavLink to="/" arial-label="home-page" className="bg-gradient-to-tr from-secondary to-primary to-50% bg-clip-text text-3xl font-bold tracking-normal text-transparent focus:outline-none focus:ring-2 focus:ring-focus md:text-4xl">
               SORA
             </NavLink>
           </div>
@@ -212,17 +198,8 @@ const SideBar = () => {
           })}
         >
           <NavigationMenuList className="m-0 gap-3 [&_.active]:bg-default [&_.active]:text-default-foreground">
-            <NavigationMenuItem
-              className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`}
-              value="home"
-            >
-              <Tooltip
-                content={t('home')}
-                isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)}
-                placement="right"
-                offset={10}
-                showArrow
-              >
+            <NavigationMenuItem className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`} value="home">
+              <Tooltip content={t("home")} isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)} placement="right" offset={10} showArrow>
                 <NavigationMenuLink asChild>
                   <NavLink
                     to="/"
@@ -232,25 +209,14 @@ const SideBar = () => {
                   >
                     {({ isActive, isPending }) => (
                       <>
-                        <Home
-                          className={
-                            !sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? 'mr-4' : ''
-                          }
-                          filled={isActive}
-                        />
-                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered)
-                          ? t('home')
-                          : null}
+                        <Home className={!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? "mr-4" : ""} filled={isActive} />
+                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t("home") : null}
                         <Spinner
                           size="sm"
                           classNames={{
-                            base:
-                              isPending &&
-                              (!sidebarMiniMode.value || (sidebarHoverMode && isHovered))
-                                ? 'ml-auto'
-                                : '!hidden',
-                            circle1: 'border-b-default-foreground',
-                            circle2: 'border-b-default-foreground',
+                            base: isPending && (!sidebarMiniMode.value || (sidebarHoverMode && isHovered)) ? "ml-auto" : "!hidden",
+                            circle1: "border-b-default-foreground",
+                            circle2: "border-b-default-foreground",
                           }}
                         />
                       </>
@@ -259,17 +225,8 @@ const SideBar = () => {
                 </NavigationMenuLink>
               </Tooltip>
             </NavigationMenuItem>
-            <NavigationMenuItem
-              className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`}
-              value="trending"
-            >
-              <Tooltip
-                content={t('trending')}
-                isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)}
-                placement="right"
-                showArrow
-                offset={10}
-              >
+            <NavigationMenuItem className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`} value="trending">
+              <Tooltip content={t("trending")} isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)} placement="right" showArrow offset={10}>
                 <NavigationMenuLink asChild>
                   <NavLink
                     to="/trending/"
@@ -279,25 +236,14 @@ const SideBar = () => {
                   >
                     {({ isActive, isPending }) => (
                       <>
-                        <TrendingUp
-                          className={
-                            !sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? 'mr-4' : ''
-                          }
-                          filled={isActive}
-                        />
-                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered)
-                          ? t('trending')
-                          : null}
+                        <TrendingUp className={!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? "mr-4" : ""} filled={isActive} />
+                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t("trending") : null}
                         <Spinner
                           size="sm"
                           classNames={{
-                            base:
-                              isPending &&
-                              (!sidebarMiniMode.value || (sidebarHoverMode && isHovered))
-                                ? 'ml-auto'
-                                : '!hidden',
-                            circle1: 'border-b-default-foreground',
-                            circle2: 'border-b-default-foreground',
+                            base: isPending && (!sidebarMiniMode.value || (sidebarHoverMode && isHovered)) ? "ml-auto" : "!hidden",
+                            circle1: "border-b-default-foreground",
+                            circle2: "border-b-default-foreground",
                           }}
                         />
                       </>
@@ -306,17 +252,8 @@ const SideBar = () => {
                 </NavigationMenuLink>
               </Tooltip>
             </NavigationMenuItem>
-            <NavigationMenuItem
-              className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`}
-              value="discover"
-            >
-              <Tooltip
-                content={t('discover')}
-                isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)}
-                placement="right"
-                showArrow
-                offset={10}
-              >
+            <NavigationMenuItem className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`} value="discover">
+              <Tooltip content={t("discover")} isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)} placement="right" showArrow offset={10}>
                 <NavigationMenuLink asChild>
                   <NavLink
                     to="/discover"
@@ -326,25 +263,14 @@ const SideBar = () => {
                   >
                     {({ isActive, isPending }) => (
                       <>
-                        <Discover
-                          className={
-                            !sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? 'mr-4' : ''
-                          }
-                          filled={isActive}
-                        />
-                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered)
-                          ? t('discover')
-                          : null}
+                        <Discover className={!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? "mr-4" : ""} filled={isActive} />
+                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t("discover") : null}
                         <Spinner
                           size="sm"
                           classNames={{
-                            base:
-                              isPending &&
-                              (!sidebarMiniMode.value || (sidebarHoverMode && isHovered))
-                                ? 'ml-auto'
-                                : '!hidden',
-                            circle1: 'border-b-default-foreground',
-                            circle2: 'border-b-default-foreground',
+                            base: isPending && (!sidebarMiniMode.value || (sidebarHoverMode && isHovered)) ? "ml-auto" : "!hidden",
+                            circle1: "border-b-default-foreground",
+                            circle2: "border-b-default-foreground",
                           }}
                         />
                       </>
@@ -353,10 +279,7 @@ const SideBar = () => {
                 </NavigationMenuLink>
               </Tooltip>
             </NavigationMenuItem>
-            <NavigationMenuItem
-              className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`}
-              value="search"
-            >
+            <NavigationMenuItem className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`} value="search">
               <NavigationMenuTrigger
                 className={sidebarActiveStyles({
                   sidebarMiniMode: sidebarMiniMode.value,
@@ -364,12 +287,8 @@ const SideBar = () => {
                 })}
                 showArrow={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)}
               >
-                <Search
-                  className={
-                    !sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? 'mr-4' : ''
-                  }
-                />
-                {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t('search') : null}
+                <Search className={!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? "mr-4" : ""} />
+                {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t("search") : null}
               </NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className="m-0 flex w-fit flex-row gap-x-[6px] p-[6px]">
@@ -378,20 +297,19 @@ const SideBar = () => {
                       <NavLink
                         to="/search/movie"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[215px] flex-row items-center justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[215px] flex-row items-center justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <Search className="mr-2 h-5 w-5" filled={isActive} />
-                            {t('search-movies')}
+                            {t("search-movies")}
                             <Spinner
                               size="sm"
                               classNames={{
-                                base: isPending ? 'ml-auto' : '!hidden',
-                                circle1: 'border-b-default-foreground',
-                                circle2: 'border-b-default-foreground',
+                                base: isPending ? "ml-auto" : "!hidden",
+                                circle1: "border-b-default-foreground",
+                                circle2: "border-b-default-foreground",
                               }}
                             />
                           </>
@@ -402,20 +320,19 @@ const SideBar = () => {
                       <NavLink
                         to="/search/tv"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[215px] flex-row items-center justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[215px] flex-row items-center justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <Search className="mr-2 h-5 w-5" filled={isActive} />
-                            {t('search-tv-shows')}
+                            {t("search-tv-shows")}
                             <Spinner
                               size="sm"
                               classNames={{
-                                base: isPending ? 'ml-auto' : '!hidden',
-                                circle1: 'border-b-default-foreground',
-                                circle2: 'border-b-default-foreground',
+                                base: isPending ? "ml-auto" : "!hidden",
+                                circle1: "border-b-default-foreground",
+                                circle2: "border-b-default-foreground",
                               }}
                             />
                           </>
@@ -426,20 +343,19 @@ const SideBar = () => {
                       <NavLink
                         to="/search/anime"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto  w-[215px] flex-row items-center justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto  w-[215px] flex-row items-center justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <Search className="mr-2 h-5 w-5" filled={isActive} />
-                            {t('search-anime')}
+                            {t("search-anime")}
                             <Spinner
                               size="sm"
                               classNames={{
-                                base: isPending ? 'ml-auto' : '!hidden',
-                                circle1: 'border-b-default-foreground',
-                                circle2: 'border-b-default-foreground',
+                                base: isPending ? "ml-auto" : "!hidden",
+                                circle1: "border-b-default-foreground",
+                                circle2: "border-b-default-foreground",
                               }}
                             />
                           </>
@@ -450,20 +366,19 @@ const SideBar = () => {
                       <NavLink
                         to="/search/people"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[215px] flex-row items-center justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[215px] flex-row items-center justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <Search className="mr-2 h-5 w-5" filled={isActive} />
-                            {t('search-people')}
+                            {t("search-people")}
                             <Spinner
                               size="sm"
                               classNames={{
-                                base: isPending ? 'ml-auto' : '!hidden',
-                                circle1: 'border-b-default-foreground',
-                                circle2: 'border-b-default-foreground',
+                                base: isPending ? "ml-auto" : "!hidden",
+                                circle1: "border-b-default-foreground",
+                                circle2: "border-b-default-foreground",
                               }}
                             />
                           </>
@@ -474,10 +389,7 @@ const SideBar = () => {
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
-            <NavigationMenuItem
-              className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`}
-              value="movies"
-            >
+            <NavigationMenuItem className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`} value="movies">
               <NavigationMenuTrigger
                 className={sidebarActiveStyles({
                   sidebarMiniMode: sidebarMiniMode.value,
@@ -485,35 +397,24 @@ const SideBar = () => {
                 })}
                 showArrow={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)}
               >
-                <Movie
-                  className={
-                    !sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? 'mr-4' : ''
-                  }
-                />
-                {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t('movies') : null}
+                <Movie className={!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? "mr-4" : ""} />
+                {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t("movies") : null}
               </NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className="m-0 flex w-fit flex-row gap-x-[6px] p-[6px]">
                   <li className="m-0 shrink-0 grow-0 basis-[215px]">
-                    <Link
-                      as={NavLink}
-                      className="absolute top-4 z-20 mx-[10px] w-[198px] justify-between text-white after:rounded-small hover:after:bg-white/10 data-[focus-visible=true]:z-20"
-                      isBlock
-                      showAnchorIcon
-                      color="foreground"
-                      to="/discover/movies"
-                    >
-                      {t('movies-discover')}
+                    <Link as={NavLink} className="absolute top-4 z-20 mx-[10px] w-[198px] justify-between text-white after:rounded-small hover:after:bg-white/10 data-[focus-visible=true]:z-20" isBlock showAnchorIcon color="foreground" to="/discover/movies">
+                      {t("movies-discover")}
                     </Link>
                     <Card
                       radius="md"
                       isPressable
                       isFooterBlurred
                       classNames={{
-                        base: 'w-full border-divider',
+                        base: "w-full border-divider",
                       }}
                       role="button"
-                      onPress={() => navigate('/movies')}
+                      onPress={() => navigate("/movies")}
                     >
                       <CardBody className="aspect-[2/3] w-full p-0">
                         <Image
@@ -521,11 +422,11 @@ const SideBar = () => {
                           width="215px"
                           height="auto"
                           style={{
-                            aspectRatio: '2/3',
-                            filter: 'brightness(0.8)',
+                            aspectRatio: "2/3",
+                            filter: "brightness(0.8)",
                           }}
                           classNames={{
-                            wrapper: 'min-w-[215px]',
+                            wrapper: "min-w-[215px]",
                           }}
                           alt="Discover movies"
                           src="https://image.tmdb.org/t/p/w342_filter(duotone,190235,ad47dd)/wNB551TsEb7KFU3an5LwOrgvUpn.jpg"
@@ -546,7 +447,7 @@ const SideBar = () => {
                         />
                       </CardBody>
                       <CardFooter className="absolute bottom-0 z-[10] justify-start bg-default/60 backdrop-blur-sm">
-                        <h4 className="text-default-foreground">{t('movies-footer')}</h4>
+                        <h4 className="text-default-foreground">{t("movies-footer")}</h4>
                       </CardFooter>
                     </Card>
                   </li>
@@ -555,27 +456,24 @@ const SideBar = () => {
                       <NavLink
                         to="/movies/popular"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[215px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[215px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <div className="mb-2 flex w-full flex-row items-center justify-start">
                               <Discover className="mr-2 h-5 w-5" filled={isActive} />
-                              {t('movies-popular')}
+                              {t("movies-popular")}
                               <Spinner
                                 size="sm"
                                 classNames={{
-                                  base: isPending ? 'ml-auto' : '!hidden',
-                                  circle1: 'border-b-default-foreground',
-                                  circle2: 'border-b-default-foreground',
+                                  base: isPending ? "ml-auto" : "!hidden",
+                                  circle1: "border-b-default-foreground",
+                                  circle2: "border-b-default-foreground",
                                 }}
                               />
                             </div>
-                            <p className="w-full text-xs text-foreground">
-                              {t('movies-popular-subtitle')}
-                            </p>
+                            <p className="w-full text-xs text-foreground">{t("movies-popular-subtitle")}</p>
                           </>
                         )}
                       </NavLink>
@@ -584,27 +482,24 @@ const SideBar = () => {
                       <NavLink
                         to="/movies/now-playing"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[215px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[215px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <div className="mb-2 flex w-full flex-row items-center justify-start">
                               <Discover className="mr-2 h-5 w-5" filled={isActive} />
-                              {t('movies-now-playing')}
+                              {t("movies-now-playing")}
                               <Spinner
                                 size="sm"
                                 classNames={{
-                                  base: isPending ? 'ml-auto' : '!hidden',
-                                  circle1: 'border-b-default-foreground',
-                                  circle2: 'border-b-default-foreground',
+                                  base: isPending ? "ml-auto" : "!hidden",
+                                  circle1: "border-b-default-foreground",
+                                  circle2: "border-b-default-foreground",
                                 }}
                               />
                             </div>
-                            <p className="w-full text-xs text-foreground">
-                              {t('movies-now-playing-subtitle')}
-                            </p>
+                            <p className="w-full text-xs text-foreground">{t("movies-now-playing-subtitle")}</p>
                           </>
                         )}
                       </NavLink>
@@ -613,27 +508,24 @@ const SideBar = () => {
                       <NavLink
                         to="/movies/upcoming"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[215px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[215px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <div className="mb-2 flex w-full flex-row items-center justify-start">
                               <Discover className="mr-2 h-5 w-5" filled={isActive} />
-                              {t('movies-upcoming')}
+                              {t("movies-upcoming")}
                               <Spinner
                                 size="sm"
                                 classNames={{
-                                  base: isPending ? 'ml-auto' : '!hidden',
-                                  circle1: 'border-b-default-foreground',
-                                  circle2: 'border-b-default-foreground',
+                                  base: isPending ? "ml-auto" : "!hidden",
+                                  circle1: "border-b-default-foreground",
+                                  circle2: "border-b-default-foreground",
                                 }}
                               />
                             </div>
-                            <p className="w-full text-xs text-foreground">
-                              {t('movies-upcoming-subtitle')}
-                            </p>
+                            <p className="w-full text-xs text-foreground">{t("movies-upcoming-subtitle")}</p>
                           </>
                         )}
                       </NavLink>
@@ -642,27 +534,24 @@ const SideBar = () => {
                       <NavLink
                         to="/movies/top-rated"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[215px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[215px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <div className="mb-2 flex w-full flex-row items-center justify-start">
                               <Discover className="mr-2 h-5 w-5" filled={isActive} />
-                              {t('movies-top-rated')}
+                              {t("movies-top-rated")}
                               <Spinner
                                 size="sm"
                                 classNames={{
-                                  base: isPending ? 'ml-auto' : '!hidden',
-                                  circle1: 'border-b-default-foreground',
-                                  circle2: 'border-b-default-foreground',
+                                  base: isPending ? "ml-auto" : "!hidden",
+                                  circle1: "border-b-default-foreground",
+                                  circle2: "border-b-default-foreground",
                                 }}
                               />
                             </div>
-                            <p className="w-full text-xs text-foreground">
-                              {t('movies-top-rated-subtitle')}
-                            </p>
+                            <p className="w-full text-xs text-foreground">{t("movies-top-rated-subtitle")}</p>
                           </>
                         )}
                       </NavLink>
@@ -671,10 +560,7 @@ const SideBar = () => {
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
-            <NavigationMenuItem
-              className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`}
-              value="tv-shows"
-            >
+            <NavigationMenuItem className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`} value="tv-shows">
               <NavigationMenuTrigger
                 className={sidebarActiveStyles({
                   sidebarMiniMode: sidebarMiniMode.value,
@@ -682,25 +568,14 @@ const SideBar = () => {
                 })}
                 showArrow={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)}
               >
-                <Tv
-                  className={
-                    !sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? 'mr-4' : ''
-                  }
-                />
-                {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t('tv-shows') : null}
+                <Tv className={!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? "mr-4" : ""} />
+                {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t("tv-shows") : null}
               </NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className="m-0 flex w-fit flex-row gap-x-[6px] p-[6px]">
                   <li className="m-0 shrink-0 grow-0 basis-[215px]">
-                    <Link
-                      as={NavLink}
-                      className="absolute top-4 z-20 mx-[10px] w-[198px] justify-between text-white after:rounded-small hover:after:bg-white/10 data-[focus-visible=true]:z-20"
-                      isBlock
-                      showAnchorIcon
-                      color="foreground"
-                      to="/discover/tv-shows"
-                    >
-                      {t('tv-shows-discover')}
+                    <Link as={NavLink} className="absolute top-4 z-20 mx-[10px] w-[198px] justify-between text-white after:rounded-small hover:after:bg-white/10 data-[focus-visible=true]:z-20" isBlock showAnchorIcon color="foreground" to="/discover/tv-shows">
+                      {t("tv-shows-discover")}
                     </Link>
                     <Card
                       role="button"
@@ -708,9 +583,9 @@ const SideBar = () => {
                       isPressable
                       isFooterBlurred
                       classNames={{
-                        base: 'w-full border-divider',
+                        base: "w-full border-divider",
                       }}
-                      onPress={() => navigate('/tv-shows')}
+                      onPress={() => navigate("/tv-shows")}
                     >
                       <CardBody className="aspect-[2/3] w-full p-0">
                         <Image
@@ -718,11 +593,11 @@ const SideBar = () => {
                           width="215px"
                           height="auto"
                           style={{
-                            aspectRatio: '2/3',
-                            filter: 'brightness(0.8)',
+                            aspectRatio: "2/3",
+                            filter: "brightness(0.8)",
                           }}
                           classNames={{
-                            wrapper: 'min-w-[215px]',
+                            wrapper: "min-w-[215px]",
                           }}
                           alt="Discover tv shows"
                           src="https://image.tmdb.org/t/p/w342_filter(duotone,352302,ddd147)/ggFHVNu6YYI5L9pCfOacjizRGt.jpg"
@@ -743,7 +618,7 @@ const SideBar = () => {
                         />
                       </CardBody>
                       <CardFooter className="absolute bottom-0 z-[10] justify-start bg-default/60 backdrop-blur-sm">
-                        <h4 className="text-default-foreground">{t('tv-shows-footer')}</h4>
+                        <h4 className="text-default-foreground">{t("tv-shows-footer")}</h4>
                       </CardFooter>
                     </Card>
                   </li>
@@ -752,27 +627,24 @@ const SideBar = () => {
                       <NavLink
                         to="/tv-shows/popular"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <div className="mb-2 flex w-full flex-row items-center justify-start">
                               <Discover className="mr-2 h-5 w-5" filled={isActive} />
-                              {t('tv-shows-popular')}
+                              {t("tv-shows-popular")}
                               <Spinner
                                 size="sm"
                                 classNames={{
-                                  base: isPending ? 'ml-auto' : '!hidden',
-                                  circle1: 'border-b-default-foreground',
-                                  circle2: 'border-b-default-foreground',
+                                  base: isPending ? "ml-auto" : "!hidden",
+                                  circle1: "border-b-default-foreground",
+                                  circle2: "border-b-default-foreground",
                                 }}
                               />
                             </div>
-                            <p className="w-full text-xs text-foreground">
-                              {t('tv-shows-popular-subtitle')}
-                            </p>
+                            <p className="w-full text-xs text-foreground">{t("tv-shows-popular-subtitle")}</p>
                           </>
                         )}
                       </NavLink>
@@ -781,27 +653,24 @@ const SideBar = () => {
                       <NavLink
                         to="/tv-shows/airing-today"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <div className="mb-2 flex w-full flex-row items-center justify-start">
                               <Discover className="mr-2 h-5 w-5" filled={isActive} />
-                              {t('tv-shows-airing-today')}
+                              {t("tv-shows-airing-today")}
                               <Spinner
                                 size="sm"
                                 classNames={{
-                                  base: isPending ? 'ml-auto' : '!hidden',
-                                  circle1: 'border-b-default-foreground',
-                                  circle2: 'border-b-default-foreground',
+                                  base: isPending ? "ml-auto" : "!hidden",
+                                  circle1: "border-b-default-foreground",
+                                  circle2: "border-b-default-foreground",
                                 }}
                               />
                             </div>
-                            <p className="w-full text-xs text-foreground">
-                              {t('tv-shows-airing-today-subtitle')}
-                            </p>
+                            <p className="w-full text-xs text-foreground">{t("tv-shows-airing-today-subtitle")}</p>
                           </>
                         )}
                       </NavLink>
@@ -810,27 +679,24 @@ const SideBar = () => {
                       <NavLink
                         to="/tv-shows/on-the-air"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <div className="mb-2 flex w-full flex-row items-center justify-start">
                               <Discover className="mr-2 h-5 w-5" filled={isActive} />
-                              {t('tv-shows-on-the-air')}
+                              {t("tv-shows-on-the-air")}
                               <Spinner
                                 size="sm"
                                 classNames={{
-                                  base: isPending ? 'ml-auto' : '!hidden',
-                                  circle1: 'border-b-default-foreground',
-                                  circle2: 'border-b-default-foreground',
+                                  base: isPending ? "ml-auto" : "!hidden",
+                                  circle1: "border-b-default-foreground",
+                                  circle2: "border-b-default-foreground",
                                 }}
                               />
                             </div>
-                            <p className="w-full text-xs text-foreground">
-                              {t('tv-shows-on-the-air-subtitle')}
-                            </p>
+                            <p className="w-full text-xs text-foreground">{t("tv-shows-on-the-air-subtitle")}</p>
                           </>
                         )}
                       </NavLink>
@@ -839,27 +705,24 @@ const SideBar = () => {
                       <NavLink
                         to="/tv-shows/top-rated"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <div className="mb-2 flex w-full flex-row items-center justify-start">
                               <Discover className="mr-2 h-5 w-5" filled={isActive} />
-                              {t('tv-shows-top-rated')}
+                              {t("tv-shows-top-rated")}
                               <Spinner
                                 size="sm"
                                 classNames={{
-                                  base: isPending ? 'ml-auto' : '!hidden',
-                                  circle1: 'border-b-default-foreground',
-                                  circle2: 'border-b-default-foreground',
+                                  base: isPending ? "ml-auto" : "!hidden",
+                                  circle1: "border-b-default-foreground",
+                                  circle2: "border-b-default-foreground",
                                 }}
                               />
                             </div>
-                            <p className="w-full text-xs text-foreground">
-                              {t('tv-shows-top-rated-subtitle')}
-                            </p>
+                            <p className="w-full text-xs text-foreground">{t("tv-shows-top-rated-subtitle")}</p>
                           </>
                         )}
                       </NavLink>
@@ -868,10 +731,7 @@ const SideBar = () => {
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
-            <NavigationMenuItem
-              className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`}
-              value="anime"
-            >
+            <NavigationMenuItem className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`} value="anime">
               <NavigationMenuTrigger
                 className={sidebarActiveStyles({
                   sidebarMiniMode: sidebarMiniMode.value,
@@ -879,25 +739,14 @@ const SideBar = () => {
                 })}
                 showArrow={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)}
               >
-                <Anime
-                  className={
-                    !sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? 'mr-4' : ''
-                  }
-                />
-                {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t('anime') : null}
+                <Anime className={!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? "mr-4" : ""} />
+                {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t("anime") : null}
               </NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className="m-0 flex w-fit flex-row gap-x-[6px] p-[6px]">
                   <li className="m-0 shrink-0 grow-0 basis-[215px]">
-                    <Link
-                      as={NavLink}
-                      className="absolute top-4 z-20 mx-[10px] w-[198px] justify-between text-white after:rounded-small hover:after:bg-white/10 data-[focus-visible=true]:z-20"
-                      isBlock
-                      showAnchorIcon
-                      color="foreground"
-                      to="/discover/anime"
-                    >
-                      {t('anime-discover')}
+                    <Link as={NavLink} className="absolute top-4 z-20 mx-[10px] w-[198px] justify-between text-white after:rounded-small hover:after:bg-white/10 data-[focus-visible=true]:z-20" isBlock showAnchorIcon color="foreground" to="/discover/anime">
+                      {t("anime-discover")}
                     </Link>
                     <Card
                       role="button"
@@ -905,9 +754,9 @@ const SideBar = () => {
                       isPressable
                       isFooterBlurred
                       classNames={{
-                        base: 'w-full border-divider',
+                        base: "w-full border-divider",
                       }}
-                      onPress={() => navigate('/anime')}
+                      onPress={() => navigate("/anime")}
                     >
                       <CardBody className="aspect-[2/3] w-full p-0">
                         <Image
@@ -915,11 +764,11 @@ const SideBar = () => {
                           width="215px"
                           height="auto"
                           style={{
-                            aspectRatio: '2/3',
-                            filter: 'brightness(0.8)',
+                            aspectRatio: "2/3",
+                            filter: "brightness(0.8)",
                           }}
                           classNames={{
-                            wrapper: 'min-w-[215px]',
+                            wrapper: "min-w-[215px]",
                           }}
                           alt="Discover anime"
                           src="https://image.tmdb.org/t/p/w342_filter(duotone,070235,dd4749)/iAld03IP69UEpqQbVWoRBvjqkqX.jpg"
@@ -940,7 +789,7 @@ const SideBar = () => {
                         />
                       </CardBody>
                       <CardFooter className="absolute bottom-0 z-[10] justify-start bg-default/60 backdrop-blur-sm">
-                        <h4 className="text-default-foreground">{t('anime-footer')}</h4>
+                        <h4 className="text-default-foreground">{t("anime-footer")}</h4>
                       </CardFooter>
                     </Card>
                   </li>
@@ -949,27 +798,24 @@ const SideBar = () => {
                       <NavLink
                         to="/anime/popular"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <div className="mb-2 flex w-full flex-row items-center justify-start">
                               <Discover className="mr-2 h-5 w-5" filled={isActive} />
-                              {t('anime-popular')}
+                              {t("anime-popular")}
                               <Spinner
                                 size="sm"
                                 classNames={{
-                                  base: isPending ? 'ml-auto' : '!hidden',
-                                  circle1: 'border-b-default-foreground',
-                                  circle2: 'border-b-default-foreground',
+                                  base: isPending ? "ml-auto" : "!hidden",
+                                  circle1: "border-b-default-foreground",
+                                  circle2: "border-b-default-foreground",
                                 }}
                               />
                             </div>
-                            <p className="w-full text-xs text-foreground">
-                              {t('anime-popular-subtitle')}
-                            </p>
+                            <p className="w-full text-xs text-foreground">{t("anime-popular-subtitle")}</p>
                           </>
                         )}
                       </NavLink>
@@ -978,27 +824,24 @@ const SideBar = () => {
                       <NavLink
                         to="/anime/trending"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <div className="mb-2 flex w-full flex-row items-center justify-start">
                               <Discover className="mr-2 h-5 w-5" filled={isActive} />
-                              {t('anime-trending')}
+                              {t("anime-trending")}
                               <Spinner
                                 size="sm"
                                 classNames={{
-                                  base: isPending ? 'ml-auto' : '!hidden',
-                                  circle1: 'border-b-default-foreground',
-                                  circle2: 'border-b-default-foreground',
+                                  base: isPending ? "ml-auto" : "!hidden",
+                                  circle1: "border-b-default-foreground",
+                                  circle2: "border-b-default-foreground",
                                 }}
                               />
                             </div>
-                            <p className="w-full text-xs text-foreground">
-                              {t('anime-trending-subtitle')}
-                            </p>
+                            <p className="w-full text-xs text-foreground">{t("anime-trending-subtitle")}</p>
                           </>
                         )}
                       </NavLink>
@@ -1007,27 +850,24 @@ const SideBar = () => {
                       <NavLink
                         to="/anime/recent-episodes"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isActive, isPending }) => (
                           <>
                             <div className="mb-2 flex w-full flex-row items-center justify-start">
                               <Discover className="mr-2 h-5 w-5" filled={isActive} />
-                              {t('anime-recent-episodes')}
+                              {t("anime-recent-episodes")}
                               <Spinner
                                 size="sm"
                                 classNames={{
-                                  base: isPending ? 'ml-auto' : '!hidden',
-                                  circle1: 'border-b-default-foreground',
-                                  circle2: 'border-b-default-foreground',
+                                  base: isPending ? "ml-auto" : "!hidden",
+                                  circle1: "border-b-default-foreground",
+                                  circle2: "border-b-default-foreground",
                                 }}
                               />
                             </div>
-                            <p className="w-full text-xs text-foreground">
-                              {t('anime-recent-episodes-subtitle')}
-                            </p>
+                            <p className="w-full text-xs text-foreground">{t("anime-recent-episodes-subtitle")}</p>
                           </>
                         )}
                       </NavLink>
@@ -1036,27 +876,24 @@ const SideBar = () => {
                       <NavLink
                         to="/anime/random"
                         className={navigationMenuTriggerStyle({
-                          class:
-                            'flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]',
+                          class: "flex h-auto w-[225px] flex-col justify-start px-2 hover:bg-background/[0.6] focus:bg-background/[0.6]",
                         })}
                       >
                         {({ isPending }) => (
                           <>
                             <div className="mb-2 flex w-full flex-row items-center justify-start">
                               <Discover className="mr-2 h-5 w-5" />
-                              {t('anime-random')}
+                              {t("anime-random")}
                               <Spinner
                                 size="sm"
                                 classNames={{
-                                  base: isPending ? 'ml-auto' : '!hidden',
-                                  circle1: 'border-b-default-foreground',
-                                  circle2: 'border-b-default-foreground',
+                                  base: isPending ? "ml-auto" : "!hidden",
+                                  circle1: "border-b-default-foreground",
+                                  circle2: "border-b-default-foreground",
                                 }}
                               />
                             </div>
-                            <p className="w-full text-xs text-foreground">
-                              {t('anime-random-subtitle')}
-                            </p>
+                            <p className="w-full text-xs text-foreground">{t("anime-random-subtitle")}</p>
                           </>
                         )}
                       </NavLink>
@@ -1065,17 +902,8 @@ const SideBar = () => {
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
-            <NavigationMenuItem
-              className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`}
-              value="people"
-            >
-              <Tooltip
-                content={t('people')}
-                isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)}
-                placement="right"
-                showArrow
-                offset={10}
-              >
+            <NavigationMenuItem className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`} value="people">
+              <Tooltip content={t("people")} isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)} placement="right" showArrow offset={10}>
                 <NavigationMenuLink asChild>
                   <NavLink
                     to="/people"
@@ -1085,25 +913,14 @@ const SideBar = () => {
                   >
                     {({ isActive, isPending }) => (
                       <>
-                        <TwoUsers
-                          className={
-                            !sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? 'mr-4' : ''
-                          }
-                          filled={isActive}
-                        />
-                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered)
-                          ? t('people')
-                          : null}
+                        <TwoUsers className={!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? "mr-4" : ""} filled={isActive} />
+                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t("people") : null}
                         <Spinner
                           size="sm"
                           classNames={{
-                            base:
-                              isPending &&
-                              (!sidebarMiniMode.value || (sidebarHoverMode && isHovered))
-                                ? 'ml-auto'
-                                : '!hidden',
-                            circle1: 'border-b-default-foreground',
-                            circle2: 'border-b-default-foreground',
+                            base: isPending && (!sidebarMiniMode.value || (sidebarHoverMode && isHovered)) ? "ml-auto" : "!hidden",
+                            circle1: "border-b-default-foreground",
+                            circle2: "border-b-default-foreground",
                           }}
                         />
                       </>
@@ -1112,17 +929,8 @@ const SideBar = () => {
                 </NavigationMenuLink>
               </Tooltip>
             </NavigationMenuItem>
-            <NavigationMenuItem
-              className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`}
-              value="featured-lists"
-            >
-              <Tooltip
-                content={t('featured-lists')}
-                isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)}
-                placement="right"
-                showArrow
-                offset={10}
-              >
+            <NavigationMenuItem className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`} value="featured-lists">
+              <Tooltip content={t("featured-lists")} isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)} placement="right" showArrow offset={10}>
                 <NavigationMenuLink asChild>
                   <NavLink
                     to="/lists"
@@ -1132,25 +940,14 @@ const SideBar = () => {
                   >
                     {({ isActive, isPending }) => (
                       <>
-                        <CategoryIcon
-                          className={
-                            !sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? 'mr-4' : ''
-                          }
-                          filled={isActive}
-                        />
-                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered)
-                          ? t('featured-lists')
-                          : null}
+                        <CategoryIcon className={!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? "mr-4" : ""} filled={isActive} />
+                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t("featured-lists") : null}
                         <Spinner
                           size="sm"
                           classNames={{
-                            base:
-                              isPending &&
-                              (!sidebarMiniMode.value || (sidebarHoverMode && isHovered))
-                                ? 'ml-auto'
-                                : '!hidden',
-                            circle1: 'border-b-default-foreground',
-                            circle2: 'border-b-default-foreground',
+                            base: isPending && (!sidebarMiniMode.value || (sidebarHoverMode && isHovered)) ? "ml-auto" : "!hidden",
+                            circle1: "border-b-default-foreground",
+                            circle2: "border-b-default-foreground",
                           }}
                         />
                       </>
@@ -1159,17 +956,8 @@ const SideBar = () => {
                 </NavigationMenuLink>
               </Tooltip>
             </NavigationMenuItem>
-            <NavigationMenuItem
-              className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`}
-              value="history"
-            >
-              <Tooltip
-                content={t('history')}
-                isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)}
-                placement="right"
-                showArrow
-                offset={10}
-              >
+            <NavigationMenuItem className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`} value="history">
+              <Tooltip content={t("history")} isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)} placement="right" showArrow offset={10}>
                 <NavigationMenuLink asChild>
                   <NavLink
                     to="/watch-history"
@@ -1179,25 +967,14 @@ const SideBar = () => {
                   >
                     {({ isActive, isPending }) => (
                       <>
-                        <History
-                          className={
-                            !sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? 'mr-4' : ''
-                          }
-                          filled={isActive}
-                        />
-                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered)
-                          ? t('history')
-                          : null}
+                        <History className={!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? "mr-4" : ""} filled={isActive} />
+                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t("history") : null}
                         <Spinner
                           size="sm"
                           classNames={{
-                            base:
-                              isPending &&
-                              (!sidebarMiniMode.value || (sidebarHoverMode && isHovered))
-                                ? 'ml-auto'
-                                : '!hidden',
-                            circle1: 'border-b-default-foreground',
-                            circle2: 'border-b-default-foreground',
+                            base: isPending && (!sidebarMiniMode.value || (sidebarHoverMode && isHovered)) ? "ml-auto" : "!hidden",
+                            circle1: "border-b-default-foreground",
+                            circle2: "border-b-default-foreground",
                           }}
                         />
                       </>
@@ -1206,17 +983,8 @@ const SideBar = () => {
                 </NavigationMenuLink>
               </Tooltip>
             </NavigationMenuItem>
-            <NavigationMenuItem
-              className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`}
-              value="settings"
-            >
-              <Tooltip
-                content={t('settings')}
-                isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)}
-                placement="right"
-                showArrow
-                offset={10}
-              >
+            <NavigationMenuItem className={`${navigationItemWidthStyle} text-left transition-[width] duration-200`} value="settings">
+              <Tooltip content={t("settings")} isDisabled={!sidebarMiniMode.value || (sidebarHoverMode && isHovered)} placement="right" showArrow offset={10}>
                 <NavigationMenuLink asChild>
                   <NavLink
                     to="/settings"
@@ -1226,25 +994,14 @@ const SideBar = () => {
                   >
                     {({ isActive, isPending }) => (
                       <>
-                        <Settings
-                          className={
-                            !sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? 'mr-4' : ''
-                          }
-                          filled={isActive}
-                        />
-                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered)
-                          ? t('settings')
-                          : null}
+                        <Settings className={!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? "mr-4" : ""} filled={isActive} />
+                        {!sidebarMiniMode.value || (sidebarHoverMode && isHovered) ? t("settings") : null}
                         <Spinner
                           size="sm"
                           classNames={{
-                            base:
-                              isPending &&
-                              (!sidebarMiniMode.value || (sidebarHoverMode && isHovered))
-                                ? 'ml-auto'
-                                : '!hidden',
-                            circle1: 'border-b-default-foreground',
-                            circle2: 'border-b-default-foreground',
+                            base: isPending && (!sidebarMiniMode.value || (sidebarHoverMode && isHovered)) ? "ml-auto" : "!hidden",
+                            circle1: "border-b-default-foreground",
+                            circle2: "border-b-default-foreground",
                           }}
                         />
                       </>
