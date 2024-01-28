@@ -1,8 +1,6 @@
 import { resolve } from 'node:path';
 import { createCookie } from '@remix-run/node';
 import Backend from 'i18next-fs-backend';
-import { RemixI18Next } from 'remix-i18next';
-
 import { i18n } from './i18n.config';
 
 const TEN_YEARS_IN_SECONDS = 10 * 365 * 24 * 60 * 60;
@@ -13,7 +11,7 @@ export const i18nCookie = createCookie('i18n', {
   maxAge: TEN_YEARS_IN_SECONDS,
 });
 
-export const i18next = new RemixI18Next({
+/* export const i18next = new RemixI18Next({
   detection: {
     cookie: i18nCookie,
     supportedLanguages: i18n.supportedLngs,
@@ -29,3 +27,4 @@ export const i18next = new RemixI18Next({
   },
   backend: Backend,
 });
+ */

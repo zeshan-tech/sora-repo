@@ -24,7 +24,6 @@ import { getSelectorsByUserAgent } from "react-device-detect";
 import { useTranslation } from "react-i18next";
 import { Provider as WrapBalancerProvider } from "react-wrap-balancer";
 import rdtStylesheet from "remix-development-tools/index.css";
-import { useChangeLanguage } from "remix-i18next";
 import Image, { MimeType } from "remix-image";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import { getClientLocales } from "remix-utils/locales/server";
@@ -51,16 +50,16 @@ import Layout from "./components/layouts/Layout";
 import nProgressStyles from "./components/styles/nprogress.css";
 import { listThemes } from "./constants/settings";
 import { useIsBot } from "./context/isbot.context";
-import { i18nCookie, i18next } from "./services/i18n";
+import { i18nCookie } from "./services/i18n";
 import { getUserFromCookie } from "./services/supabase";
 import { getListGenre, getListLanguages } from "./services/tmdb/tmdb.server";
-import tailwindStylesheetUrl from "./styles/tailwind.css";
 import type { Handle } from "./types/handle";
 import { combineHeaders } from "./utils";
 import * as gtag from "./utils/client/gtags.client";
 import { useHydrated } from "./utils/react/hooks/useHydrated";
 import { useToast } from "./utils/react/hooks/useToast";
 import { getToastSession } from "./utils/server/toast-session.server";
+import styles from "./index.css";
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -115,7 +114,7 @@ export const links: LinksFunction = () => {
     { rel: "manifest", href: "/manifest.webmanifest" },
     { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     // Preload CSS as a resource to avoid render blocking
-    { rel: "preload", as: "style", href: tailwindStylesheetUrl },
+    { rel: "preload", as: "style", href: styles },
     cssBundleHref ? { rel: "preload", as: "style", href: cssBundleHref } : null,
     { rel: "preload", as: "style", href: FontStyles100 },
     { rel: "preload", as: "style", href: FontStyles200 },
@@ -126,7 +125,7 @@ export const links: LinksFunction = () => {
     { rel: "preload", as: "style", href: FontStyles700 },
     { rel: "preload", as: "style", href: FontStyles800 },
     //These should match the css preloads above to avoid css as render blocking resource
-    { rel: "stylesheet", href: tailwindStylesheetUrl },
+    { rel: "stylesheet", href: styles },
     cssBundleHref ? { rel: "stylesheet", href: cssBundleHref } : null,
     process.env.NODE_ENV === "development" ? { rel: "stylesheet", href: rdtStylesheet } : null,
     { rel: "stylesheet", href: FontStyles100 },
@@ -149,27 +148,18 @@ export const links: LinksFunction = () => {
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const locale = await i18next.getLocale(request);
   const gaTrackingId = process.env.GA_TRACKING_ID;
   const user = await getUserFromCookie(request.headers.get("Cookie") || "");
   const deviceDetect = getSelectorsByUserAgent(request.headers.get("User-Agent") || "");
   const ipAddress = getClientIPAddress(request);
   const locales = getClientLocales(request);
   const nowDate = new Date();
-  const formatter = new Intl.DateTimeFormat(locale, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
   const toast = getToastSession(request);
   const message = await toast.getMessage();
 
   return json(
     {
       user: user || undefined,
-      locale,
-      genresMovie: await getListGenre("movie", locale),
-      genresTv: await getListGenre("tv", locale),
       languages: await getListLanguages(),
       gaTrackingId,
       deviceDetect,
@@ -181,14 +171,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       },
       ipAddress,
       locales,
-      nowDate: formatter.format(nowDate),
       message,
     },
     {
       headers: combineHeaders(
-        new Headers({
-          "Set-Cookie": await i18nCookie.serialize(locale),
-        }),
         new Headers({
           "Set-Cookie": await toast.commit(),
         })
@@ -370,7 +356,7 @@ function useDetectSWUpdate() {
 
 const Document = ({ children, title }: DocumentProps) => {
   const location = useLocation();
-  const { locale, gaTrackingId, ENV } = useLoaderData<typeof loader>();
+  const { gaTrackingId, ENV } = useLoaderData<typeof loader>() ?? {};
   const { i18n } = useTranslation();
   const isBot = useIsBot();
   const isHydrated = useHydrated();
@@ -391,7 +377,7 @@ const Document = ({ children, title }: DocumentProps) => {
   useSWEffect();
 
   return (
-    <html lang={locale} dir={i18n.dir()} suppressHydrationWarning>
+    <html suppressHydrationWarning>
       <head>
         {title ? <title>{title}</title> : null}
         <meta charSet="utf-8" />
@@ -399,6 +385,7 @@ const Document = ({ children, title }: DocumentProps) => {
         <meta name="darkreader-lock" content="disable darkreader" />
         <meta name="msvalidate.01" content="1445DD7580898781011249BF246A21AD" />
         <meta name="theme-color" content={`hsl(${color})`} />
+        <script src="https://cdn.tailwindcss.com" />
         <Meta />
         <Links />
       </head>
@@ -439,11 +426,10 @@ const Document = ({ children, title }: DocumentProps) => {
   );
 };
 
-const App = () => {
+export default function App() {
   const isHydrated = useHydrated();
-  const { user, locale, message } = useLoaderData<typeof loader>();
+  const { user, message } = useLoaderData<typeof loader>();
   const isBot = useIsBot();
-  useChangeLanguage(locale);
   useToast(message);
   const { waitingWorker, isUpdateAvailable } = useDetectSWUpdate();
 
@@ -511,13 +497,14 @@ const App = () => {
       </WrapBalancerProvider>
     </Document>
   );
-};
+}
 
 export function ErrorBoundary() {
   const error = useRouteError();
   const isProd = process.env.NODE_ENV === "production";
 
   if (isRouteErrorResponse(error)) {
+    console.log(error instanceof Error);
     let message;
     switch (error.status) {
       case 401:
@@ -646,12 +633,3 @@ export function ErrorBoundary() {
     );
   }
 }
-
-let AppExport = App;
-
-if (process.env.NODE_ENV === "development") {
-  const { withDevTools } = require("remix-development-tools");
-  AppExport = withDevTools(AppExport);
-}
-
-export default AppExport;
